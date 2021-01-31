@@ -5,7 +5,7 @@
     "title": "Web chat",
     "description": "Simple application of web chat for authenticated and non-authenticated users"
   },
-  "host": "localhost:3000",
+  "host": "web-chat-yatsynych.herokuapp.com",
   "basePath": "/",
   "tags": [
     {
