@@ -3,7 +3,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 
-
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger.json')
 
@@ -20,7 +19,7 @@ const routes = require('./router')
 app.use(routes)
 
 const port = process.env.PORT
-const dbUri = process.env.DB_URI
+const dbUri = process.env.MONGODB_URI
 
 async function start() {
     try {
