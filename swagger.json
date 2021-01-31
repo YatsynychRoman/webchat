@@ -1,0 +1,260 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Web chat",
+    "description": "Simple application of web chat for authenticated and non-authenticated users"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth APIs"
+    },
+    {
+      "name": "Messages",
+      "description": "Operations with messages"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Registration API: \n- User e-mail must be unique to prevent multiple accounts for one user; \n- Name should be longer than 3 characters and less than 20;\n- Password must contain at least both upper and lower case letter, number and special character",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "description": "E-mail, name and password (all of them must be provided)",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "default": "example@mail.com",
+                  "required": true
+                },
+                "name": {
+                  "default": "John",
+                  "required": true
+                },
+                "password": {
+                  "default": "QwErTy1234!",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Login API: \n - User must be registered before login\n- Response contain all information about user (excluding password) and token pair",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "default": "example@mail.com"
+                },
+                "password": {
+                  "default": "QwErTy1234!"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    },
+    "/auth/getByToken": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Get user by access token \n- JWT must not be expired\n- Access token is in request headers in 'Authorization'\n- Response contain all information about user (excluding password)",
+        "parameters": [],
+        "security": [
+          {
+            "token_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    },
+    "/messages/create": {
+      "post": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Create message API:\n- Users can create messages without authorization, but then they need to provide their temporary name OR if they are authorized, then the message will contain information about them\n- If user authorized and temporary name provided, authorized user info will be contained in message\n- Text of message must be provided",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "temporaryName": {
+                  "type": "string",
+                  "default": "John"
+                },
+                "text": {
+                  "type": "string",
+                  "default": "Hello everybody!"
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "token_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    },
+    "/messages/list/{page}": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Messages list API:\nGetting list of 10 messages on a chosen page",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    },
+    "/messages/single/{id}": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Single message API: \nGetting single message with id which is an ObjectId of a message",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All responses with 200 code, error handling via 'Error' property in response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "token_auth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "securityDefinitions": {
+    "token_auth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "id",
+          "format": "ObjectId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "format": "hash"
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "id",
+          "format": "ObjectId"
+        },
+        "user": {
+          "type": "id",
+          "format": "ObjectId",
+          "required": false
+        },
+        "author": {
+          "type": "string",
+          "required": false
+        },
+        "text": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "datetime",
+          "format": "ISODate"
+        },
+        "updatedAt": {
+          "type": "datetime",
+          "format": "ISODate"
+        }
+      }
+    }
+  }
+}
